@@ -1,0 +1,12 @@
+dependencies:
+- name: postgres
+  repository: https://ra-beer.github.io/helm-charts
+  version: 0.1.0
+- name: rabbitmq
+  repository: oci://registry-1.docker.io/cloudpirates
+  version: 0.13.2
+- name: rabbitmq
+  repository: oci://registry-1.docker.io/cloudpirates
+  version: 0.13.2
+digest: sha256:4a137e0eca46fb765ff1b88392c1f7b184e196c20083fa32ee5c1af247b65e3f
+generated: "2026-01-26T10:54:41.326478+01:00"

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "taiga.fullname" . }}-front
+  labels:
+    {{- include "taiga.labels" . | nindent 4 }}
+    app: front
+spec:
+  type: {{ .Values.front.service.type | default "ClusterIP" }}
+  {{- if .Values.front.service.port }}
+  ports:
+    - name: {{ .Values.front.service.name | default "http" }}
+      port: {{ .Values.front.service.port }}
+      targetPort: {{ .Values.front.service.targetport }}
+      protocol: {{ .Values.front.service.protocol | default "TCP" }}
+  {{- end }}
+  selector:
+    {{- include "taiga.selectorLabels" . | nindent 4 }}
+    app: front

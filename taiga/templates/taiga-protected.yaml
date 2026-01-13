@@ -1,0 +1,51 @@
+{{- $name := include "taiga.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}-protected
+  labels:
+    {{ include "taiga.labels" . | nindent 4 }}
+    app: protected
+spec:
+  replicas: {{ default .Values.replicaCount .Values.protected.replicas }}
+  selector:
+    matchLabels:
+      {{ include "taiga.selectorLabels" . | nindent 6 }}
+      app: protected
+  template:
+    metadata:
+      labels:
+        {{ include "taiga.selectorLabels" . | nindent 8 }}
+        app: protected
+      annotations:
+        {{ toYaml .Values.podAnnotations | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "taiga.serviceAccountName" . }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{ toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: taiga-protected
+          image: "{{ .Values.protected.image.repository }}:{{ .Values.protected.image.tag }}"
+          imagePullPolicy: {{ .Values.protected.image.pullPolicy }}
+          env:
+            {{- if .Values.protected.env }}
+            {{ toYaml .Values.protected.env | nindent 12 }}
+            {{- end }}
+          resources:
+            {{ toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.protected.volumeMounts }}
+            {{ toYaml .Values.protected.volumeMounts | nindent 12 }}
+            {{- end }}
+      volumes:
+        {{- if .Values.protected.volumes }}
+        {{ toYaml .Values.protected.volumes | nindent 8 }}
+        {{- end }}
+      nodeSelector:
+        {{ toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations:
+        {{ toYaml .Values.tolerations | nindent 8 }}
+      affinity:
+        {{ toYaml .Values.affinity | nindent 8 }}

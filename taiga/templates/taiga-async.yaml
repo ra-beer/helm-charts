@@ -1,0 +1,52 @@
+{{- $name := include "taiga.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}-async
+  labels:
+    {{ include "taiga.labels" . | nindent 4 }}
+    app: async
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{ include "taiga.selectorLabels" . | nindent 6 }}
+      app: async
+  template:
+    metadata:
+      labels:
+        {{ include "taiga.selectorLabels" . | nindent 8 }}
+        app: async
+      annotations:
+        {{ toYaml .Values.podAnnotations | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "taiga.serviceAccountName" . }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{ toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: taiga-async
+          image: "{{ .Values.async.image.repository }}:{{ .Values.async.image.tag }}"
+          imagePullPolicy: {{ .Values.async.image.pullPolicy }}
+          command: ["/taiga-back/docker/async_entrypoint.sh"]
+          env:
+            {{- if .Values.async.env }}
+            {{ toYaml .Values.async.env | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.async.volumeMounts }}
+            {{ toYaml .Values.async.volumeMounts | nindent 12 }}
+            {{- end }}
+          resources:
+            {{ toYaml .Values.resources | nindent 12 }}
+      volumes:
+        {{- if .Values.async.volumes }}
+        {{ toYaml .Values.async.volumes | nindent 8 }}
+        {{- end }}
+      nodeSelector:
+        {{ toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations:
+        {{ toYaml .Values.tolerations | nindent 8 }}
+      affinity:
+        {{ toYaml .Values.affinity | nindent 8 }}

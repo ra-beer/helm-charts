@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "taiga.fullname" . }}-async
+  labels:
+    {{- include "taiga.labels" . | nindent 4 }}
+    app: async
+spec:
+  type: {{ .Values.async.service.type | default "ClusterIP" }}
+  {{- if .Values.async.service.port }}
+  ports:
+    - name: {{ .Values.async.service.name | default "http" }}
+      port: {{ .Values.async.service.port }}
+      targetPort: {{ .Values.async.service.targetport }}
+      protocol: {{ .Values.async.service.protocol | default "TCP" }}
+  {{- end }}
+  selector:
+    {{- include "taiga.selectorLabels" . | nindent 4 }}
+    app: async

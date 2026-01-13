@@ -1,0 +1,376 @@
+# Default values for taiga.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+replicaCount: 1
+
+# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Specifies whether a service account should be created.
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account.
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template.
+  name: ""
+
+# This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+    # - secretName: chart-example-tls
+    #   hosts:
+    #     - chart-example.local
+
+# -- Expose the service via gateway-api HTTPRoute
+# Requires Gateway API resources and suitable controller installed within the cluster
+# (see: https://gateway-api.sigs.k8s.io/guides/)
+httpRoute:
+  # HTTPRoute enabled.
+  enabled: false
+  # HTTPRoute annotations.
+  annotations: {}
+  # Which Gateways this Route is attached to.
+  parentRefs:
+    - name: gateway
+      sectionName: http
+      # namespace: default
+  # Hostnames matching HTTP header.
+  hostnames:
+    - chart-example.local
+  # List of rules and filters applied.
+  rules:
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /headers
+  #   filters:
+  #   - type: RequestHeaderModifier
+  #     requestHeaderModifier:
+  #       set:
+  #       - name: My-Overwrite-Header
+  #         value: this-is-the-only-value
+  #       remove:
+  #       - User-Agent
+  # - matches:
+  #   - path:
+  #       type: PathPrefix
+  #       value: /echo
+  #     headers:
+  #     - name: version
+  #       value: v2
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+events-rabbitmq:
+  auth:
+    username: "taiga"
+    password: "taigaio"
+    erlangCookie: "secret-erlang-cookie"
+  definitions:
+    enabled: true
+    vhosts: 
+      - name: "taiga"
+        limits: []
+        metadata:
+          description: "Taiga Events Vhost"
+          tags: []
+
+async-rabbitmq:
+  auth:
+    username: "taiga"
+    password: "taigaio"
+    erlangCookie: "secret-erlang-cookie"
+  definitions:
+    enabled: true
+    vhosts: 
+      - name: "taiga"
+        limits: []
+        metadata:
+          description: "Taiga Async Vhost"
+          tags: []
+
+back:
+  image:
+    repository: elestio/taiga-backend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  # Environment variables for the back container. Use a list of objects: - name: FOO
+  #   value: bar
+  env:
+  # Database settings
+  - name: POSTGRES_DB
+    value: "taiga"
+  - name: POSTGRES_USER
+    value: "taiga"
+  - name: POSTGRES_PASSWORD
+    value: "taiga"
+  - name: POSTGRES_HOST
+    value: "taiga-postgres"
+  # Taiga settings
+  - name: TAIGA_SECRET_KEY
+    value: "taiga-secret-key"
+  - name: TAIGA_SITES_SCHEME
+    value: "http"
+  - name: TAIGA_SITES_DOMAIN
+    value: "localhost:9000"
+  - name: TAIGA_SUBPATH
+    value: ""
+  # Email settings.
+  - name: EMAIL_BACKEND
+    value: "console"
+  - name: DEFAULT_FROM_EMAIL
+    value: "changeme@example.com"
+  - name: EMAIL_USE_TLS
+    value: "True"
+  - name: EMAIL_USE_SSL
+    value: "False"
+  - name: EMAIL_HOST
+    value: "smtp.host.example.com"
+  - name: EMAIL_PORT
+    value: "587"
+  - name: EMAIL_HOST_USER
+    value: "user"
+  - name: EMAIL_HOST_PASSWORD
+    value: "password"
+  # Rabbitmq settings
+  - name: RABBITMQ_USER
+    value: "taiga"
+  - name: RABBITMQ_PASS
+    value: "taigaio"
+  # Telemetry settings
+  - name: ENABLE_TELEMETRY
+    value: "True"
+  # Volumes and mounts for the back container (standard Kubernetes volume/volumeMount objects)
+  volumes: []
+  volumeMounts: []
+  # Informational only: services the container depends on in compose semantics
+  dependsOn: []
+  service:
+    type: ClusterIP
+    name: http
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+
+async:
+  enabled: true
+  # Override replicas for the async Deployment (falls back to top-level replicaCount)
+  replicas: 1
+  image:
+    repository: elestio/taiga-backend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  # Command/entrypoint for the async worker
+  command:
+    - "/taiga-back/docker/async_entrypoint.sh"
+  env:
+    # Database settings
+    - name: POSTGRES_DB
+      value: "taiga"
+    - name: POSTGRES_USER
+      value: "taiga"
+    - name: POSTGRES_PASSWORD
+      value: "taiga"
+    - name: POSTGRES_HOST
+      value: "taiga-postgres"
+    # Taiga settings
+    - name: TAIGA_SECRET_KEY
+      value: "taiga-secret-key"
+    - name: TAIGA_SITES_SCHEME
+      value: "http"
+    - name: TAIGA_SITES_DOMAIN
+      value: "localhost:9000"
+    - name: TAIGA_SUBPATH
+      value: ""
+    # Email settings.
+    - name: EMAIL_BACKEND
+      value: "console"
+    - name: DEFAULT_FROM_EMAIL
+      value: "changeme@example.com"
+    - name: EMAIL_USE_TLS
+      value: "True"
+    - name: EMAIL_USE_SSL
+      value: "False"
+    - name: EMAIL_HOST
+      value: "smtp.host.example.com"
+    - name: EMAIL_PORT
+      value: "587"
+    - name: EMAIL_HOST_USER
+      value: "user"
+    - name: EMAIL_HOST_PASSWORD
+      value: "password"
+    # Rabbitmq settings
+    - name: RABBITMQ_USER
+      value: "taiga"
+    - name: RABBITMQ_PASS
+      value: "taigaio"
+    - name: RABBITMQ_VHOST
+      value: "taiga"
+    # Telemetry settings
+    - name: ENABLE_TELEMETRY
+      value: "True"
+  volumes: []
+  volumeMounts: []
+  # Informational only: compose-style dependencies
+  dependsOn: []
+  service:
+    type: ClusterIP
+    name: http
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+
+front:
+  enabled: true
+  replicas: 1
+  image:
+    repository: elestio/taiga-frontend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  # Environment variables exposed to the front container. Use a list of objects:
+  # - name: TAIGA_URL
+  #   value: "https://example.com"
+  env:
+    - name: TAIGA_URL
+      value: "http://localhost:9000"
+    - name: TAIGA_WEBSOCKETS_URL
+      value: "ws://localhost:9000"
+    - name: TAIGA_SUBPATH
+      value: ""
+  # Optional volume for custom conf.json (e.g. hostPath or configMap/secret)
+  volumes: []
+  volumeMounts: []
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
+
+events:
+  enabled: true
+  replicas: 1
+  image:
+    repository: elestio/taiga-event
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  env:
+    - name: RABBITMQ_USER
+      value: "taiga"
+    - name: RABBITMQ_PASS
+      value: "taigaio"
+    - name: TAIGA_SECRET_KEY
+      value: "taiga-secret-key"
+    - name: RABBITMQ_VHOST
+      value: "taiga"
+  volumes: []
+  volumeMounts: []
+  dependsOn: []
+  service:
+    type: ClusterIP
+    name: http
+    port: 8888
+    targetPort: 8888
+    protocol: TCP
+
+protected:
+  enabled: true
+  replicas: 1
+  image:
+    repository: elestio/taiga-protected
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  env:
+    - name: MAX_AGE
+      value: "360"
+    - name: SECRET_KEY
+      value: "taiga-secret-key"
+  volumes: []
+  volumeMounts: []
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+
+gateway:
+  enabled: true
+  replicas: 1
+  image:
+    repository: nginx
+    tag: "1.19-alpine"
+    pullPolicy: IfNotPresent
+  # Volume mounts and volumes (provide config and persistent volumes via values)
+  volumes: []
+  volumeMounts: []
+  # Optional dependencies (compose semantics)
+  dependsOn: []
+  service:
+    type: ClusterIP
+    port: 9000
+    targetPort: 80
+    protocol: TCP
+    name: http
+
+postgres:
+  postgres_database: taiga
+  postgres_password: taiga
+  postgres_user: taiga

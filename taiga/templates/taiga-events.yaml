@@ -1,0 +1,51 @@
+{{- $name := include "taiga.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}-events
+  labels:
+    {{ include "taiga.labels" . | nindent 4 }}
+    app: events
+spec:
+  replicas: {{ default .Values.replicaCount .Values.events.replicas }}
+  selector:
+    matchLabels:
+      {{ include "taiga.selectorLabels" . | nindent 6 }}
+      app: events
+  template:
+    metadata:
+      labels:
+        {{ include "taiga.selectorLabels" . | nindent 8 }}
+        app: events
+      annotations:
+        {{ toYaml .Values.podAnnotations | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "taiga.serviceAccountName" . }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{ toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: taiga-events
+          image: "{{ .Values.events.image.repository }}:{{ .Values.events.image.tag }}"
+          imagePullPolicy: {{ .Values.events.image.pullPolicy }}
+          env:
+            {{- if .Values.events.env }}
+            {{ toYaml .Values.events.env | nindent 12 }}
+            {{- end }}
+          resources:
+            {{ toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.events.volumeMounts }}
+            {{ toYaml .Values.events.volumeMounts | nindent 12 }}
+            {{- end }}
+      volumes:
+        {{- if .Values.events.volumes }}
+        {{ toYaml .Values.events.volumes | nindent 8 }}
+        {{- end }}
+      nodeSelector:
+        {{ toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations:
+        {{ toYaml .Values.tolerations | nindent 8 }}
+      affinity:
+        {{ toYaml .Values.affinity | nindent 8 }}
