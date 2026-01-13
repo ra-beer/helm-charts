@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "taiga.fullname" . }}-events
+  labels:
+    {{- include "taiga.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.events.type | default "ClusterIP" }}
+  {{- if .Values.service.events.port }}
+  ports:
+    - name: {{ .Values.service.events.name | default "http" }}
+      port: {{ .Values.service.events.port }}
+      targetPort: {{ .Values.service.events.targetport }}
+      protocol: {{ .Values.service.events.protocol | default "TCP" }}
+  {{- end }}
+  selector:
+    {{- include "taiga.selectorLabels" . | nindent 4 }}

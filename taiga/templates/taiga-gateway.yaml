@@ -1,0 +1,51 @@
+{{- $name := include "taiga.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}-gateway
+  labels:
+    {{ include "taiga.labels" . | nindent 4 }}
+spec:
+  replicas: {{ default .Values.replicaCount .Values.gateway.replicas }}
+  selector:
+    matchLabels:
+      {{ include "taiga.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{ include "taiga.selectorLabels" . | nindent 8 }}
+      annotations:
+        {{ toYaml .Values.podAnnotations | indent 8 }}
+    spec:
+      serviceAccountName: {{ include "taiga.serviceAccountName" . }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+        - name: taiga-gateway
+          image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
+          imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ default 80 .Values.gateway.containerPort }}
+          env:
+            {{- if .Values.gateway.env }}
+            {{ toYaml .Values.gateway.env | indent 12 }}
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.gateway.volumeMounts }}
+            {{ toYaml .Values.gateway.volumeMounts | indent 12 }}
+            {{- end }}
+          resources:
+            {{ toYaml .Values.resources | indent 12 }}
+      volumes:
+        {{- if .Values.gateway.volumes }}
+        {{ toYaml .Values.gateway.volumes | indent 8 }}
+        {{- end }}
+      nodeSelector:
+        {{ toYaml .Values.nodeSelector | indent 8 }}
+      tolerations:
+        {{ toYaml .Values.tolerations | indent 8 }}
+      affinity:
+        {{ toYaml .Values.affinity | indent 8 }}

@@ -1,0 +1,51 @@
+{{- $name := include "taiga.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}-front
+  labels:
+    {{ include "taiga.labels" . | nindent 4 }}
+spec:
+  replicas: {{ default .Values.replicaCount .Values.front.replicas }}
+  selector:
+    matchLabels:
+      {{ include "taiga.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{ include "taiga.selectorLabels" . | nindent 8 }}
+      annotations:
+        {{ toYaml .Values.podAnnotations | indent 8 }}
+    spec:
+      serviceAccountName: {{ include "taiga.serviceAccountName" . }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+        - name: taiga-front
+          image: "{{ .Values.front.image.repository }}:{{ .Values.front.image.tag }}"
+          imagePullPolicy: {{ .Values.front.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+          env:
+            {{- if .Values.front.env }}
+            {{ toYaml .Values.front.env | indent 12 }}
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.front.volumeMounts }}
+            {{ toYaml .Values.front.volumeMounts | indent 12 }}
+            {{- end }}
+          resources:
+            {{ toYaml .Values.resources | indent 12 }}
+      volumes:
+        {{- if .Values.front.volumes }}
+        {{ toYaml .Values.front.volumes | indent 8 }}
+        {{- end }}
+      nodeSelector:
+        {{ toYaml .Values.nodeSelector | indent 8 }}
+      tolerations:
+        {{ toYaml .Values.tolerations | indent 8 }}
+      affinity:
+        {{ toYaml .Values.affinity | indent 8 }}

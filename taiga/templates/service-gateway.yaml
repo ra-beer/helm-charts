@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "taiga.fullname" . }}-gateway
+  labels:
+    {{- include "taiga.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.gateway.type | default "ClusterIP" }}
+  {{- if .Values.service.gateway.port }}
+  ports:
+    - name: {{ .Values.service.gateway.name | default "http" }}
+      port: {{ .Values.service.gateway.port }}
+      targetPort: {{ .Values.service.gateway.targetport }}
+      protocol: {{ .Values.service.gateway.protocol | default "TCP" }}
+  {{- end }}
+  selector:
+    {{- include "taiga.selectorLabels" . | nindent 4 }}

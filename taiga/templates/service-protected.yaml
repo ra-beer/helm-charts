@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "taiga.fullname" . }}-protected
+  labels:
+    {{- include "taiga.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.protected.type | default "ClusterIP" }}
+  {{- if .Values.service.protected.port }}
+  ports:
+    - name: {{ .Values.service.protected.name | default "http" }}
+      port: {{ .Values.service.protected.port }}
+      targetPort: {{ .Values.service.protected.targetport }}
+      protocol: {{ .Values.service.protected.protocol | default "TCP" }}
+  {{- end }}
+  selector:
+    {{- include "taiga.selectorLabels" . | nindent 4 }}

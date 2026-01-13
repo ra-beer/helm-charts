@@ -1,0 +1,6 @@
+dependencies:
+- name: postgres
+  repository: https://ra-beer.github.io/helm-charts
+  version: 0.1.0
+digest: sha256:f0376cd2871e827286b8fc69609ea9ec85b192a5e35dfa7d5f0139f363d8b9fd
+generated: "2026-01-14T08:27:43.404837+01:00"
