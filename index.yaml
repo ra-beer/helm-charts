@@ -3,9 +3,9 @@ entries:
   postgres:
   - apiVersion: v2
     appVersion: "18.1"
-    created: "2026-01-26T12:05:22.875055795Z"
+    created: "2026-01-26T12:23:44.607302927Z"
     description: A Helm chart for PostgreSQL
-    digest: e6247ea95ad957333f36188592106dabc0a524607bdf13eece41549261cdcd83
+    digest: 20373ebf59c9f6f0b6ba9808a3a4f166fcc1fd186cf4e5a1c3cbdb8c1e10348c
     name: postgres
     type: application
     urls:
@@ -14,7 +14,7 @@ entries:
   taiga:
   - apiVersion: v2
     appVersion: 6.9.0
-    created: "2026-01-26T12:05:22.878742908Z"
+    created: "2026-01-26T12:23:44.610697843Z"
     dependencies:
     - name: postgres
       repository: https://ra-beer.github.io/helm-charts
@@ -28,10 +28,10 @@ entries:
       repository: oci://registry-1.docker.io/cloudpirates
       version: 0.13.2
     description: A Helm chart for taiga.io
-    digest: 8df9fadc29f048bfe63568592d4eba9b1ae4e94202172404ea43aa1d7591fa40
+    digest: 40ce7cd5f46f7470972334fb1c14833f1b3d39bccfff2a98d4b5eead64041f8c
     name: taiga
     type: application
     urls:
     - https://ra-beer.github.io/helm-charts/taiga-0.1.0.tgz
     version: 0.1.0
-generated: "2026-01-26T12:05:22.874435163Z"
+generated: "2026-01-26T12:23:44.606749585Z"
