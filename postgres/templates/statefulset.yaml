@@ -63,15 +63,23 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.volumes }}
       volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            {{- if .Values.persistence.existingClaim }}
+            claimName: {{ .Values.persistence.existingClaim }}
+            {{- else }}
+            claimName: {{ include "postgres.fullname" . }}
+            {{- end }}
+      {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -83,13 +91,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  volumeClaimTemplates:
-    - metadata:
-        name: {{ include "postgres.fullname" . }}
-      spec:
-        accessModes:
-          - {{ .Values.accessModes }}
-        storageClassName: {{ .Values.storageClassName }}
-        resources:
-          requests:
-            storage: {{ .Values.storage }}
+

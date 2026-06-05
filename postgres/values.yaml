@@ -147,3 +147,12 @@ accessModes: "ReadWriteOnce"
 postgres_database: default
 postgres_password: default
 postgres_user: default
+
+# pvc Variables
+persistence:
+  enabled: true
+  existingClaim: ""
+  accessMode: "ReadWriteOnce"
+  size: "1Gi"
+  storageClass: ""
+  annotations: {}
