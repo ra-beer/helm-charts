@@ -3,9 +3,9 @@ entries:
   postgres:
   - apiVersion: v2
     appVersion: "17.10"
-    created: "2026-06-05T14:23:51.922011979Z"
+    created: "2026-06-05T14:30:26.057222726Z"
     description: A Helm chart for PostgreSQL
-    digest: 24b56a23633a8ffb0bc3aabd43465d89e885abc7253d8c4601b4112a0906fec5
+    digest: 490a707cfa453a0c8d11a2f4383ca7e4c7987502b830eb79cfab44e24f02726d
     name: postgres
     type: application
     urls:
@@ -14,24 +14,24 @@ entries:
   taiga:
   - apiVersion: v2
     appVersion: 6.9.0
-    created: "2026-06-05T14:23:51.924745803Z"
+    created: "2026-06-05T14:30:26.061284559Z"
     dependencies:
     - name: postgres
       repository: https://ra-beer.github.io/helm-charts
-      version: 0.1.0
+      version: 0.3.0
     - alias: events-rabbitmq
       name: rabbitmq
-      repository: oci://registry-1.docker.io/cloudpirates
-      version: 0.13.2
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 16.0.14
     - alias: async-rabbitmq
       name: rabbitmq
-      repository: oci://registry-1.docker.io/cloudpirates
-      version: 0.13.2
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 16.0.14
     description: A Helm chart for taiga.io
-    digest: 5666d571296c902aa517d7f560c6b231eee18420c9ac60adbfa0a87cde8c5ee2
+    digest: bc18dd6d2ebb7ed12941e2a6fde4afca6c4a357552f4a8af19ab3be88dace635
     name: taiga
     type: application
     urls:
-    - https://ra-beer.github.io/helm-charts/taiga-0.1.0.tgz
-    version: 0.1.0
-generated: "2026-06-05T14:23:51.921506709Z"
+    - https://ra-beer.github.io/helm-charts/taiga-0.2.0.tgz
+    version: 0.2.0
+generated: "2026-06-05T14:30:26.056748982Z"
