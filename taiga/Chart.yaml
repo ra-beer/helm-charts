@@ -25,7 +25,7 @@ appVersion: "6.9.0"
 
 dependencies:
   - name: postgres
-    version: 0.3.0
+    version: 0.4.0
     repository: https://ra-beer.github.io/helm-charts
 
   - name: rabbitmq
