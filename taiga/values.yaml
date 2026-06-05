@@ -119,43 +119,47 @@ tolerations: []
 affinity: {}
 
 events-rabbitmq:
+  image:
+    repository: bitnamilegacy/rabbitmq
+  global:
+    security:
+      allowInsecureImages: true
   auth:
     username: "taiga"
     password: "taigaio"
     erlangCookie: "secret-erlang-cookie"
-  definitions:
-    enabled: true
-    vhosts: 
-      - name: "taiga"
-        limits: []
-        metadata:
-          description: "Taiga Events Vhost"
-          tags: []
+  extraConfiguration: |-
+    default_vhost = taiga
+    default_permissions.configure = .*
+    default_permissions.write = .*
+    default_permissions.read = .*
 
 async-rabbitmq:
+  image:
+    repository: bitnamilegacy/rabbitmq
+  global:
+    security:
+      allowInsecureImages: true
   auth:
     username: "taiga"
     password: "taigaio"
     erlangCookie: "secret-erlang-cookie"
-  definitions:
-    enabled: true
-    vhosts: 
-      - name: "taiga"
-        limits: []
-        metadata:
-          description: "Taiga Async Vhost"
-          tags: []
+  extraConfiguration: |-
+    default_vhost = taiga
+    default_permissions.configure = .*
+    default_permissions.write = .*
+    default_permissions.read = .*
 
 back:
   image:
-    repository: elestio/taiga-backend
-    tag: "latest"
+    repository: ghcr.io/ra-beer/taiga-back
+    tag: stable
     pullPolicy: IfNotPresent
   # Environment variables for the back container. Use a list of objects: - name: FOO
   #   value: bar
   env:
   # Database settings
-  - name: POSTGRES_DB
+  - name: POSTGRES_DATABASE
     value: "taiga"
   - name: POSTGRES_USER
     value: "taiga"
@@ -214,15 +218,15 @@ async:
   # Override replicas for the async Deployment (falls back to top-level replicaCount)
   replicas: 1
   image:
-    repository: elestio/taiga-backend
-    tag: "latest"
+    repository: ghcr.io/ra-beer/taiga-back
+    tag: stable
     pullPolicy: IfNotPresent
   # Command/entrypoint for the async worker
   command:
     - "/taiga-back/docker/async_entrypoint.sh"
   env:
     # Database settings
-    - name: POSTGRES_DB
+    - name: POSTGRES_DATABASE
       value: "taiga"
     - name: POSTGRES_USER
       value: "taiga"
@@ -281,8 +285,8 @@ front:
   enabled: true
   replicas: 1
   image:
-    repository: elestio/taiga-frontend
-    tag: "latest"
+    repository: ghcr.io/ra-beer/taiga-front
+    tag: stable
     pullPolicy: IfNotPresent
   # Environment variables exposed to the front container. Use a list of objects:
   # - name: TAIGA_URL
@@ -308,8 +312,8 @@ events:
   enabled: true
   replicas: 1
   image:
-    repository: elestio/taiga-event
-    tag: "latest"
+    repository: ghcr.io/ra-beer/taiga-events
+    tag: stable
     pullPolicy: IfNotPresent
   env:
     - name: RABBITMQ_USER
@@ -334,8 +338,8 @@ protected:
   enabled: true
   replicas: 1
   image:
-    repository: elestio/taiga-protected
-    tag: "latest"
+    repository: ghcr.io/ra-beer/taiga-protected
+    tag: stable
     pullPolicy: IfNotPresent
   env:
     - name: MAX_AGE

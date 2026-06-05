@@ -1,0 +1,1 @@
+helm install taiga . --namespace taiga --create-namespace --wait
