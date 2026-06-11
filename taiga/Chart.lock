@@ -1,12 +1,12 @@
 dependencies:
 - name: postgres
   repository: https://ra-beer.github.io/helm-charts
-  version: 0.3.0
+  version: 0.4.0
 - name: rabbitmq
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 16.0.14
 - name: rabbitmq
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 16.0.14
-digest: sha256:4e565613bda39dd6a5062c01058a0f2559b7491992f5388acfdf8bf09232cf09
-generated: "2026-06-05T16:24:58.155323+02:00"
+digest: sha256:974d21b4faa6ec337babe9e9bb186fb7395587fdead164c503842ef52663c285
+generated: "2026-06-05T16:51:34.776338+02:00"
